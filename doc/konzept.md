@@ -10,11 +10,11 @@ Personen die am Morgen nicht aus dem Bett kommen.
 - Traumtagebuch
 - opt.
   - Handy schütteln
-  - Glyph interface
+  - Glyph interface (nicht möglich ┏༼ ◉╭╮◉༽┓)
 
 ### Nicht funktional:
 
-nix
+- App sollte keinen Augenkrebs verursachen
 
 ## Mockups
 Das Mockup der App kann unter dem folgenden link eingesehen werden:

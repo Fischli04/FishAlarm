@@ -1,19 +1,20 @@
 package com.example.fishalarm
 
+import android.content.Intent
 import android.database.Cursor
-import android.media.MediaPlayer
 import android.media.RingtoneManager
-import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import java.sql.Time
-
+import java.lang.Exception
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private var times: Array<String> = arrayOf("06:00", "06:30", "06:45", "07:00", "08:00")
-    private var ringtones: Map<String, String>? = null
-    private lateinit var currentPlayer: MediaPlayer
+    private lateinit var ringtones: Map<String, String>
+    private lateinit var selectedRingtone: String
+    private var calendar = Calendar.getInstance();
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,71 +24,77 @@ class MainActivity : AppCompatActivity() {
         ringtones = getNotifications()
 
         val select: Spinner = findViewById(R.id.RingtoneSelect)
-        RingtoneManager.ACTION_RINGTONE_PICKER
 
-        val ringtones = getNotifications()
+        select.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                selectedRingtone = ringtones[select.selectedItem.toString()].toString()
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+        }
+
+
+
+        RingtoneManager.ACTION_RINGTONE_PICKER
 
         val array: Array<String> = ringtones.keys.toTypedArray()
 
         val a = ArrayAdapter(this, android.R.layout.simple_spinner_item, array)
         select.adapter = a
 
-        val button: Button = findViewById(R.id.play)
 
-        button.setOnClickListener {
-            var isEnabled: Switch = findViewById(R.id.alarmActive)
-            if (isEnabled.isChecked){
-                val uri = ringtones[select.selectedItem.toString()]
 
-                currentPlayer = MediaPlayer.create(this, Uri.parse(uri))
 
-                currentPlayer.isLooping = true
-                currentPlayer.start()
-                button.isEnabled = false
-                val button: Button = findViewById(R.id.pause)
-                button.isEnabled = true
-            }
+        val calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 9)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        if(calendar.time.time < System.currentTimeMillis()){
+            calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + 1)
         }
 
-        val offButton: Button = findViewById(R.id.pause)
-        offButton.isEnabled = false
+        val timer = Timer()
+        val task: TimerTask = object : TimerTask() {
+            override fun run() {
+                ring()
+            }
+        }
+        // repeat every hour
+        timer.schedule(task, calendar.timeInMillis - System.currentTimeMillis())
 
-        offButton.setOnClickListener {
-            currentPlayer.stop()
-            button.isEnabled = true
-            val button: Button = findViewById(R.id.pause)
-            button.isEnabled = false
+
+
+
+
+
+        val timePicker: TimePicker = findViewById(R.id.timePicker1);
+
+        timePicker.setOnTimeChangedListener { timePicker: TimePicker, i: Int, i1: Int ->
+            val task: TimerTask = object : TimerTask() {
+                override fun run() {
+                    ring()
+                    timer.cancel()
+                }
+            }
+
+            setCalendar(calendar, i, i1)
+
+            timer.schedule(task, calendar.timeInMillis - System.currentTimeMillis())
         }
 
-            //ArrayAdapter.createFromResource(
-            //    this,
-            //    0,
-            //    array
-            //).also { adapter ->
-            //    // Specify the layout to use when the list of choices appears
-            //    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            //    // Apply the adapter to the spinner
-            //    Select.adapter = array
-            //}
-
-        val bar: SeekBar = findViewById(R.id.AlarmTimeBar)
-        bar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
-                val label: TextView = findViewById(R.id.AlarmTimeLabel)
-                val bar: SeekBar = findViewById(R.id.AlarmTimeBar)
-                label.text = times[bar.progress]
-            }
-
-            override fun onStartTrackingTouch(p0: SeekBar?) {
-
-            }
-
-            override fun onStopTrackingTouch(p0: SeekBar?) {
-
-            }
-        })
     }
 
+    private fun ring() {
+        var isEnabled: Switch = findViewById(R.id.alarmActive)
+        if(isEnabled.isChecked){
+            val intent = Intent(this@MainActivity, AlarmActivity::class.java)
+            intent.putExtra("uri", selectedRingtone)
+            startActivity(intent)
+        }
+
+    }
 
     private fun getNotifications(): Map<String, String> {
         val manager = RingtoneManager(this)
@@ -101,5 +108,15 @@ class MainActivity : AppCompatActivity() {
             list[notificationTitle] = notificationUri
         }
         return list
+    }
+
+    private fun setCalendar(calendar: Calendar, hours: Int, minutes: Int){
+        calendar.timeInMillis = System.currentTimeMillis();
+        calendar.set(Calendar.HOUR_OF_DAY, hours)
+        calendar.set(Calendar.MINUTE, minutes)
+        calendar.set(Calendar.SECOND, 0)
+        if(calendar.time.time < System.currentTimeMillis()){
+            calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + 1)
+        }
     }
 }
