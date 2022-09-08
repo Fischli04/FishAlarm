@@ -45,5 +45,8 @@ Ansonsten wurden keine weiteren Technologien verwendet.
 
 | Identifikation | Vorbedingungen | Vorgehen | Erwartetes Resultat |
 |-|-|-|-|
-| FishAlarm-Test-01 | 1. App ist geöffnte <br> 2. Wecker ist Aktiviert | Zeit auswählen mit Time Picker | Wecker geht um die angegebene Zeit los |
-| FishAlarm-Test-02 | 1. App ist geöffnte | Wecker mit Switch aktivieren | Wecker geht um die angegebene Zeit los |
+| FishAlarm-Test-01 | 1. App ist geöffnet <br> 2. Wecker ist Aktiviert | Zeit auswählen mit Time Picker | Wecker geht um die angegebene Zeit los |
+| FishAlarm-Test-02 | 1. App ist geöffnet <br> 2. Zeit ist eingestellt | Wecker mit Switch aktivieren | Wecker geht um die angegebene Zeit los |
+| FishAlarm-Test-03 | 1. App ist geöffnet <br> 2. Zeit ist eingestellt | Wecker mit Switch deaktivieren | Wecker geht nicht um die angegebene Zeit los |
+| FishAlarm-Test-04 | 1. App ist geöffnet <br> 2. Wecker ist Aktiviert <br> 3. Zeit ist eingestellt | Klingelton wechseln | Wecker geht mit dem ausgewählten Klingelton los |
+| FishAlarm-Test-05 | 1. App ist geöffnet <br> 2. Wecker ist Aktiviert <br> 3. Zeit ist eingestellt <br> 4. Wecker geht los | "Stop Alarm" drücken | Wecker stoppt |
